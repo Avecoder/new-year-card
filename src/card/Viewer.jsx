@@ -6,6 +6,7 @@ export default function Viewer({ templateId, toName, fromName, message, snowEnab
   const template = useMemo(() => getTemplateById(templateId), [templateId])
   const [flipped, setFlipped] = useState(!!flippedFromUrl)
   const [expanded, setExpanded] = useState(false)
+  const [canExpand, setCanExpand] = useState(false)
   const animRef = useRef(false)
   const timersRef = useRef([])
 
@@ -30,12 +31,21 @@ export default function Viewer({ templateId, toName, fromName, message, snowEnab
 
     if (!flipped) {
       setFlipped(true)
-      timersRef.current.push(window.setTimeout(() => setExpanded(true), flipMs))
-      timersRef.current.push(window.setTimeout(() => { animRef.current = false }, flipMs + expandMs))
+      if (canExpand) {
+        timersRef.current.push(window.setTimeout(() => setExpanded(true), flipMs))
+        timersRef.current.push(window.setTimeout(() => { animRef.current = false }, flipMs + expandMs))
+      } else {
+        timersRef.current.push(window.setTimeout(() => { animRef.current = false }, flipMs))
+      }
     } else {
-      setExpanded(false)
-      timersRef.current.push(window.setTimeout(() => setFlipped(false), expandMs))
-      timersRef.current.push(window.setTimeout(() => { animRef.current = false }, expandMs + flipMs))
+      if (expanded) {
+        setExpanded(false)
+        timersRef.current.push(window.setTimeout(() => setFlipped(false), expandMs))
+        timersRef.current.push(window.setTimeout(() => { animRef.current = false }, expandMs + flipMs))
+      } else {
+        setFlipped(false)
+        timersRef.current.push(window.setTimeout(() => { animRef.current = false }, flipMs))
+      }
     }
   }
 
@@ -56,6 +66,10 @@ export default function Viewer({ templateId, toName, fromName, message, snowEnab
             message={message}
             flipped={flipped}
             expanded={expanded}
+            onSizeInfo={({ base, desired }) => {
+              if (!base || !desired) return
+              setCanExpand(desired > base + 4)
+            }}
             snowEnabled={snowEnabled}
             snowDensity={snowDensity}
           />

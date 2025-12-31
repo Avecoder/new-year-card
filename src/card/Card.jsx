@@ -26,6 +26,7 @@ export default function Card({
   message,
   flipped,
   expanded = false,
+  onSizeInfo,
   snowEnabled,
   snowDensity,
 }) {
@@ -42,7 +43,7 @@ export default function Card({
   const measureRef = useRef(null)
   const [measuredW, setMeasuredW] = useState(0)
   const [collapsedH, setCollapsedH] = useState(0)
-  const [expandedH, setExpandedH] = useState(0)
+  const [desiredH, setDesiredH] = useState(0)
 
   const insideNodes = useMemo(
     () => (
@@ -77,9 +78,8 @@ export default function Card({
     const measure = () => {
       const rect = el.getBoundingClientRect()
       setMeasuredW(Math.floor(rect.width))
-      if (!expanded) {
-        setCollapsedH(Math.floor(rect.height))
-      }
+      // считаем "базовую" высоту, когда карточка не expanded
+      if (!expanded) setCollapsedH(Math.floor(rect.height))
     }
 
     measure()
@@ -88,7 +88,6 @@ export default function Card({
   }, [expanded])
 
   useLayoutEffect(() => {
-    if (!expanded) return
     const wrap = wrapRef.current
     const meas = measureRef.current
     if (!wrap || !meas) return
@@ -98,11 +97,17 @@ export default function Card({
     const want = Math.ceil(meas.getBoundingClientRect().height + 10)
     const maxH = Math.floor(window.innerHeight * 0.86)
     const next = Math.max(base, Math.min(want, maxH))
-    setExpandedH(next)
-  }, [expanded, measuredW, collapsedH, insideNodes])
+    setDesiredH(next)
+  }, [measuredW, collapsedH, insideNodes])
 
-  const style = expanded && expandedH
-    ? { '--card-h': `${expandedH}px` }
+  useLayoutEffect(() => {
+    if (typeof onSizeInfo !== 'function') return
+    if (!collapsedH || !desiredH) return
+    onSizeInfo({ base: collapsedH, desired: desiredH })
+  }, [collapsedH, desiredH, onSizeInfo])
+
+  const style = expanded && desiredH
+    ? { '--card-h': `${desiredH}px` }
     : collapsedH
       ? { '--card-h': `${collapsedH}px` }
       : undefined

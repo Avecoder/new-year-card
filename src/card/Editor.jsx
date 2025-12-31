@@ -28,6 +28,7 @@ export default function Editor({
 }) {
   const template = useMemo(() => getTemplateById(templateId), [templateId])
   const [expanded, setExpanded] = useState(false)
+  const [canExpand, setCanExpand] = useState(false)
   const animRef = useRef(false)
   const timersRef = useRef([])
 
@@ -76,13 +77,22 @@ export default function Editor({
     if (!flipped) {
       // flip -> expand
       onFlip()
-      timersRef.current.push(window.setTimeout(() => setExpanded(true), flipMs))
-      timersRef.current.push(window.setTimeout(() => { animRef.current = false }, flipMs + expandMs))
+      if (canExpand) {
+        timersRef.current.push(window.setTimeout(() => setExpanded(true), flipMs))
+        timersRef.current.push(window.setTimeout(() => { animRef.current = false }, flipMs + expandMs))
+      } else {
+        timersRef.current.push(window.setTimeout(() => { animRef.current = false }, flipMs))
+      }
     } else {
-      // shrink -> flip back
-      setExpanded(false)
-      timersRef.current.push(window.setTimeout(() => onFlip(), expandMs))
-      timersRef.current.push(window.setTimeout(() => { animRef.current = false }, expandMs + flipMs))
+      // close: если реально было расширение — shrink -> flip back, иначе flip сразу
+      if (expanded) {
+        setExpanded(false)
+        timersRef.current.push(window.setTimeout(() => onFlip(), expandMs))
+        timersRef.current.push(window.setTimeout(() => { animRef.current = false }, expandMs + flipMs))
+      } else {
+        onFlip()
+        timersRef.current.push(window.setTimeout(() => { animRef.current = false }, flipMs))
+      }
     }
   }
 
@@ -111,6 +121,10 @@ export default function Editor({
               message={message}
               flipped={flipped}
               expanded={expanded}
+              onSizeInfo={({ base, desired }) => {
+                if (!base || !desired) return
+                setCanExpand(desired > base + 4)
+              }}
               snowEnabled={snowEnabled}
               snowDensity={snowDensity}
             />

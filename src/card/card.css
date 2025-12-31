@@ -405,6 +405,10 @@
   line-height: 1.65;
   color: rgba(10,20,25,0.86);
   white-space: pre-wrap;
+  overflow: auto;
+  padding-right: 6px;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
 }
 
 .inside-footer { display: flex; gap: 10px; }
@@ -427,6 +431,12 @@
     linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.82) 100%);
   border-radius: 22px;
   border: 1px solid rgba(255,255,255,0.55);
+}
+
+.card-measure .inside-message {
+  overflow: visible;
+  max-height: none;
+  padding-right: 0;
 }
 
 /* Template palettes */
