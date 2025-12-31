@@ -90,7 +90,7 @@ export default function Editor({
                 value={toName}
                 onChange={(e) => onChange({ toName: e.target.value })}
                 placeholder="Например: Диме"
-                maxLength={40}
+                maxLength={120}
               />
             </label>
             <label className="label">
@@ -100,7 +100,7 @@ export default function Editor({
                 value={fromName}
                 onChange={(e) => onChange({ fromName: e.target.value })}
                 placeholder="Например: от Саши"
-                maxLength={40}
+                maxLength={120}
               />
             </label>
             <label className="label">
@@ -117,7 +117,7 @@ export default function Editor({
                 }}
                 placeholder="Напиши пару тёплых строк…"
                 rows={7}
-                maxLength={420}
+                maxLength={2000}
               />
             </label>
           </div>
