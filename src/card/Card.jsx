@@ -1,3 +1,4 @@
+import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import SnowCanvas from '../SnowCanvas'
 import { PUBLIC_PNGS } from './publicPngs'
 import { IQ_ENABLED } from '../config'
@@ -24,6 +25,7 @@ export default function Card({
   fromName,
   message,
   flipped,
+  expanded = false,
   snowEnabled,
   snowDensity,
 }) {
@@ -36,8 +38,77 @@ export default function Card({
     : ''
   const showIq = Boolean(IQ_ENABLED)
 
+  const wrapRef = useRef(null)
+  const measureRef = useRef(null)
+  const [measuredW, setMeasuredW] = useState(0)
+  const [collapsedH, setCollapsedH] = useState(0)
+  const [expandedH, setExpandedH] = useState(0)
+
+  const insideNodes = useMemo(
+    () => (
+      <>
+        <div className="inside-header">
+          <div className="inside-to">
+            <div className="inside-label">Кому</div>
+            <div className="inside-value">{to || '…'}</div>
+          </div>
+          <div className="inside-to">
+            <div className="inside-label">От кого</div>
+            <div className="inside-value">{from || '…'}</div>
+          </div>
+        </div>
+
+        <div className="inside-message">{msg || 'Напиши пару тёплых строк — они появятся здесь.'}</div>
+
+        <div className="inside-footer" aria-hidden="true">
+          <div className="inside-mark" />
+          <div className="inside-mark" />
+          <div className="inside-mark" />
+        </div>
+      </>
+    ),
+    [to, from, msg],
+  )
+
+  useLayoutEffect(() => {
+    const el = wrapRef.current
+    if (!el) return
+
+    const measure = () => {
+      const rect = el.getBoundingClientRect()
+      setMeasuredW(Math.floor(rect.width))
+      if (!expanded) {
+        setCollapsedH(Math.floor(rect.height))
+      }
+    }
+
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [expanded])
+
+  useLayoutEffect(() => {
+    if (!expanded) return
+    const wrap = wrapRef.current
+    const meas = measureRef.current
+    if (!wrap || !meas) return
+
+    const base = collapsedH || Math.floor(wrap.getBoundingClientRect().height)
+    // + немного воздуха, чтобы не было вплотную
+    const want = Math.ceil(meas.getBoundingClientRect().height + 10)
+    const maxH = Math.floor(window.innerHeight * 0.86)
+    const next = Math.max(base, Math.min(want, maxH))
+    setExpandedH(next)
+  }, [expanded, measuredW, collapsedH, insideNodes])
+
+  const style = expanded && expandedH
+    ? { '--card-h': `${expandedH}px` }
+    : collapsedH
+      ? { '--card-h': `${collapsedH}px` }
+      : undefined
+
   return (
-    <div className={`card-wrap ${template.className}`}>
+    <div ref={wrapRef} className={`card-wrap ${template.className}`} style={style}>
       <div className={`card-3d ${flipped ? 'is-flipped' : ''}`}>
         <div className="card-face card-front" aria-label="Обложка открытки">
           {snowEnabled && <SnowCanvas density={snowDensity} />}
@@ -63,27 +134,18 @@ export default function Card({
         </div>
 
         <div className="card-face card-inside" aria-label="Текст открытки">
-          <div className="inside-header">
-            <div className="inside-to">
-              <div className="inside-label">Кому</div>
-              <div className="inside-value">{to || '…'}</div>
-            </div>
-            <div className="inside-to">
-              <div className="inside-label">От кого</div>
-              <div className="inside-value">{from || '…'}</div>
-            </div>
-          </div>
-
-          <div className="inside-message">
-            {msg || 'Напиши пару тёплых строк — они появятся здесь.'}
-          </div>
-
-          <div className="inside-footer" aria-hidden="true">
-            <div className="inside-mark" />
-            <div className="inside-mark" />
-            <div className="inside-mark" />
-          </div>
+          {insideNodes}
         </div>
+      </div>
+
+      {/* Скрытый измеритель для расчёта нужной высоты при expanded */}
+      <div
+        ref={measureRef}
+        className={`card-measure ${template.className}`}
+        style={{ width: measuredW ? `${measuredW}px` : undefined }}
+        aria-hidden="true"
+      >
+        {insideNodes}
       </div>
     </div>
   )

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Card from './Card'
 import { getTemplateById } from './templates'
 
@@ -27,6 +27,21 @@ export default function Editor({
   saveState = 'idle',
 }) {
   const template = useMemo(() => getTemplateById(templateId), [templateId])
+  const [expanded, setExpanded] = useState(false)
+  const animRef = useRef(false)
+  const timersRef = useRef([])
+
+  useEffect(() => {
+    // если карточка закрыта — сбрасываем expanded
+    if (!flipped) setExpanded(false)
+  }, [flipped])
+
+  useEffect(() => {
+    return () => {
+      for (const t of timersRef.current) window.clearTimeout(t)
+      timersRef.current = []
+    }
+  }, [])
 
   const copy = async () => {
     await onCopyLink()
@@ -50,6 +65,27 @@ export default function Editor({
     onChange({ message: `${prefix}${base}${suffix}` })
   }
 
+  const flipMs = 700
+  const expandMs = 420
+  const toggleCard = () => {
+    if (animRef.current) return
+    animRef.current = true
+    for (const t of timersRef.current) window.clearTimeout(t)
+    timersRef.current = []
+
+    if (!flipped) {
+      // flip -> expand
+      onFlip()
+      timersRef.current.push(window.setTimeout(() => setExpanded(true), flipMs))
+      timersRef.current.push(window.setTimeout(() => { animRef.current = false }, flipMs + expandMs))
+    } else {
+      // shrink -> flip back
+      setExpanded(false)
+      timersRef.current.push(window.setTimeout(() => onFlip(), expandMs))
+      timersRef.current.push(window.setTimeout(() => { animRef.current = false }, expandMs + flipMs))
+    }
+  }
+
   return (
     <div className="page page-editor">
       <header className="topbar">
@@ -67,13 +103,14 @@ export default function Editor({
 
       <div className="editor-grid">
         <section className="preview">
-          <div className="preview-stage" onClick={onFlip} role="button" tabIndex={0}>
+          <div className="preview-stage" onClick={toggleCard} role="button" tabIndex={0}>
             <Card
               template={template}
               toName={toName}
               fromName={fromName}
               message={message}
               flipped={flipped}
+              expanded={expanded}
               snowEnabled={snowEnabled}
               snowDensity={snowDensity}
             />
@@ -123,7 +160,7 @@ export default function Editor({
           </div>
 
           <div className="control-row">
-            <button type="button" className="btn" onClick={onFlip}>
+            <button type="button" className="btn" onClick={toggleCard}>
               Перевернуть
             </button>
             <button type="button" className="btn" onClick={generateWish}>

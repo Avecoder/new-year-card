@@ -277,9 +277,10 @@
 /* Card */
 .card-wrap {
   width: min(700px, 94vw);
-  height: min(420px, 68vh);
+  height: var(--card-h, min(420px, 68vh));
   position: relative;
   overflow: visible;
+  transition: height 420ms cubic-bezier(.2, .9, .2, 1);
 }
 
 .card-3d {
@@ -412,6 +413,20 @@
   height: 10px;
   border-radius: 999px;
   background: rgba(10,20,25,0.16);
+}
+
+.card-measure {
+  position: fixed;
+  left: -99999px;
+  top: 0;
+  opacity: 0;
+  pointer-events: none;
+  padding: 18px;
+  background:
+    repeating-linear-gradient(0deg, rgba(10,20,25,0.05) 0px, rgba(10,20,25,0.05) 1px, rgba(255,255,255,0.0) 12px),
+    linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.82) 100%);
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,0.55);
 }
 
 /* Template palettes */
