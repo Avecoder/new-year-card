@@ -1,5 +1,7 @@
-const BASE_URL = (import.meta.env?.VITE_MOCKAPI_BASE_URL || '').replace(/\/+$/, '')
-const RESOURCE = (import.meta.env?.VITE_MOCKAPI_RESOURCE || 'cards').replace(/^\/+/, '')
+import { MOCKAPI_BASE_URL, MOCKAPI_RESOURCE } from '../config'
+
+const BASE_URL = String(MOCKAPI_BASE_URL || '').replace(/\/+$/, '')
+const RESOURCE = String(MOCKAPI_RESOURCE || 'cards').replace(/^\/+/, '')
 
 export function isMockApiConfigured() {
   return Boolean(BASE_URL)

@@ -1,5 +1,6 @@
 import SnowCanvas from '../SnowCanvas'
 import { PUBLIC_PNGS } from './publicPngs'
+import { IQ_ENABLED } from '../config'
 
 function safeText(s) {
   if (typeof s !== 'string') return ''
@@ -33,7 +34,7 @@ export default function Card({
   const pngSrc = PUBLIC_PNGS.length
     ? PUBLIC_PNGS[hashString(`png|${template.id}|${to}|${from}|${msg}`) % PUBLIC_PNGS.length]
     : ''
-  const showIq = String(import.meta.env?.VITE_IQ ?? '') === '1'
+  const showIq = Boolean(IQ_ENABLED)
 
   return (
     <div className={`card-wrap ${template.className}`}>
