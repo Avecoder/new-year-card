@@ -1,0 +1,165 @@
+.greeting-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(10, 20, 25, 0.35);
+  backdrop-filter: blur(10px);
+}
+
+.greeting-card {
+  position: relative;
+  width: min(920px, 100%);
+  max-height: min(86vh, 760px);
+  overflow: auto;
+  background: rgba(255, 255, 255, 0.62);
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  border-radius: 22px;
+  padding: 26px 18px 18px;
+  box-shadow:
+    0 26px 70px rgba(0, 0, 0, 0.22),
+    0 1px 0 rgba(255, 255, 255, 0.50) inset;
+}
+
+.greeting-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.5);
+  color: rgba(10, 20, 25, 0.78);
+  cursor: pointer;
+  font-weight: 700;
+  backdrop-filter: blur(10px);
+}
+
+.greeting-close:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(255, 215, 0, 0.22);
+}
+
+.greeting-art {
+  font-family: 'Courier New', 'Monaco', monospace;
+  font-size: 0.8em;
+  color: #ffd700;
+  text-shadow: 
+    0 0 10px rgba(255, 215, 0, 0.8),
+    0 0 20px rgba(255, 215, 0, 0.5);
+  margin-bottom: 26px;
+  white-space: pre;
+  animation: artGlow 3s ease-in-out infinite alternate;
+  text-align: center;
+}
+
+@keyframes artGlow {
+  0% {
+    text-shadow: 
+      0 0 10px rgba(255, 215, 0, 0.8),
+      0 0 20px rgba(255, 215, 0, 0.5);
+  }
+  100% {
+    text-shadow: 
+      0 0 20px rgba(255, 215, 0, 1),
+      0 0 40px rgba(255, 215, 0, 0.7),
+      0 0 60px rgba(255, 215, 0, 0.5);
+  }
+}
+
+.greeting-text {
+  max-width: 700px;
+  width: 100%;
+  margin: 22px auto 28px;
+  text-align: left;
+  line-height: 1.75;
+  font-size: 1.05em;
+  color: rgba(10, 20, 25, 0.86);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+}
+
+.greeting-text p {
+  margin-bottom: 20px;
+}
+
+.greeting-year {
+  margin: 24px 0 10px;
+  font-family: 'Courier New', 'Monaco', monospace;
+  font-size: 0.5em;
+  color: #ffd700;
+  text-shadow: 
+    0 0 10px rgba(255, 215, 0, 0.8),
+    0 0 20px rgba(255, 215, 0, 0.5);
+  white-space: pre;
+  animation: yearGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes yearGlow {
+  0% {
+    text-shadow: 
+      0 0 10px rgba(255, 215, 0, 0.8),
+      0 0 20px rgba(255, 215, 0, 0.5);
+  }
+  100% {
+    text-shadow: 
+      0 0 20px rgba(255, 215, 0, 1),
+      0 0 40px rgba(255, 215, 0, 0.7);
+  }
+}
+
+.greeting-signature {
+  margin-top: 18px;
+  font-family: 'Courier New', 'Monaco', monospace;
+  font-size: 1em;
+  color: rgba(10, 20, 25, 0.7);
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  white-space: pre;
+  text-align: center;
+}
+
+.greeting-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(10, 20, 25, 0.08);
+}
+
+@media (max-width: 768px) {
+  .greeting-card {
+    padding: 22px 14px 14px;
+    border-radius: 18px;
+  }
+  
+  .greeting-art {
+    font-size: 0.6em;
+    margin-bottom: 18px;
+  }
+  
+  .greeting-text {
+    font-size: 1em;
+  }
+  
+  .greeting-year {
+    font-size: 0.4em;
+  }
+}
+
+@media (max-width: 480px) {
+  .greeting-art {
+    font-size: 0.5em;
+  }
+  
+  .greeting-text {
+    font-size: 0.9em;
+  }
+  
+  .greeting-year {
+    font-size: 0.35em;
+  }
+}

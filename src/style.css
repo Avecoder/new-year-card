@@ -4,53 +4,105 @@
   box-sizing: border-box;
 }
 
+html, body {
+  height: 100%;
+}
+
 body {
-  font-family: 'Arial', 'Helvetica', sans-serif;
-  min-height: 100vh;
-  background: #000000;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  min-height: 100%;
+  background:
+    radial-gradient(1200px 900px at 20% 25%, rgba(255, 241, 184, 0.55) 0%, rgba(255, 241, 184, 0.0) 58%),
+    radial-gradient(1100px 900px at 80% 20%, rgba(231, 219, 255, 0.55) 0%, rgba(231, 219, 255, 0.0) 60%),
+    radial-gradient(900px 700px at 50% 78%, rgba(207, 232, 230, 0.9) 0%, rgba(207, 232, 230, 0.0) 62%),
+    linear-gradient(180deg, #f6f3ee 0%, #d9f2ef 100%);
   overflow-x: hidden;
+  overflow-y: auto;
   position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
+  margin: 0;
+  padding: 0;
+  color: rgba(10, 20, 25, 0.9);
 }
 
-.snowflake {
-  position: fixed;
-  top: -20px;
-  color: #ffffff;
-  font-family: Arial, sans-serif;
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8),
-               0 0 20px rgba(255, 255, 255, 0.4);
-  animation: fall linear infinite;
-  pointer-events: none;
-  z-index: 1;
-  user-select: none;
-}
-
-@keyframes fall {
-  0% {
-    transform: translateY(0) translateX(0) rotate(0deg);
-    opacity: 1;
-  }
-  50% {
-    transform: translateY(50vh) translateX(20px) rotate(180deg);
-  }
-  100% {
-    transform: translateY(100vh) translateX(-20px) rotate(360deg);
-    opacity: 0;
-  }
-}
-
-.simple-page {
-  position: relative;
-  z-index: 10;
+.app-min {
+  min-height: 100vh;
   width: 100%;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+}
+
+.app-min::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 1;
+  transform: translateZ(0);
+  background:
+    radial-gradient(1200px 900px at 15% 20%, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.0) 52%),
+    radial-gradient(1200px 900px at 85% 15%, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.0) 54%),
+    radial-gradient(1100px 800px at 50% 65%, rgba(10, 20, 25, 0.06) 0%, rgba(10, 20, 25, 0.0) 56%),
+    radial-gradient(1400px 1000px at 50% 55%, rgba(10, 20, 25, 0.0) 55%, rgba(10, 20, 25, 0.18) 100%);
+}
+
+.spline-center {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.spline-center::before {
+  content: '';
+  position: absolute;
+  width: min(860px, 92vw);
+  height: min(620px, 72vh);
+  border-radius: 999px;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.0) 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.spline-center::after {
+  content: '';
+  position: absolute;
+  width: min(740px, 86vw);
+  height: 120px;
+  bottom: max(10px, 6vh);
+  border-radius: 999px;
+  background: radial-gradient(closest-side, rgba(10, 20, 25, 0.16) 0%, rgba(10, 20, 25, 0.0) 72%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.snow-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.95;
+}
+
+.spline-center > :is(canvas):not(.snow-canvas) {
+  z-index: 1;
+}
+
+.spline-center canvas {
+  background: transparent !important;
+}
+
+.placeholder {
+  position: absolute;
+  z-index: 2;
+  transition: opacity 0.5s ease;
 }
 
 .message {
@@ -87,10 +139,60 @@ body {
   }
 }
 
-/* Адаптивность */
-@media (max-width: 768px) {
+/* Адаптивность для планшетов */
+@media (max-width: 1024px) and (min-width: 769px) {
   .message h1 {
-    font-size: 2em;
+    font-size: 2.5em;
+    padding: 0 30px;
+  }
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .simple-page {
+    width: 100%;
+    height: 100%;
+  }
+  
+  #spline-canvas {
+    width: 100% !important;
+    height: 100% !important;
+  }
+  
+  .message h1 {
+    font-size: 1.5em;
     padding: 0 20px;
+    letter-spacing: 1px;
+  }
+}
+
+/* Адаптивность для маленьких мобильных */
+@media (max-width: 480px) {
+  .message h1 {
+    font-size: 1.2em;
+    padding: 0 15px;
+    letter-spacing: 0.5px;
+  }
+}
+
+/* Адаптивность для очень маленьких экранов */
+@media (max-width: 360px) {
+  .message h1 {
+    font-size: 1em;
+    padding: 0 10px;
+  }
+}
+
+/* Ландшафтная ориентация на мобильных */
+@media (max-width: 768px) and (orientation: landscape) {
+  .message h1 {
+    font-size: 1.8em;
+  }
+}
+
+/* Очень большие экраны */
+@media (min-width: 1920px) {
+  .message h1 {
+    font-size: 4em;
   }
 }
